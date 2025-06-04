@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block title %} Book Details - {{ book.title }} {% endblock %}
+{% block style %}
+<style>
+    .book-details {
+        padding: 50px 0;
+    }
+
+    .book-details .book-image {
+        width: 50%;
+        height: 500px;
+        /* Kích thước chiều cao hiện tại */
+        object-fit: cover;
+        display: block;
+    }
+
+    .book-details .book-info {
+        padding: 20px;
+    }
+
+    .book-details .book-info h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .book-details .book-info .author {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .book-details .book-info .price {
+        font-size: 1.5rem;
+        color: #e44d26;
+        margin-bottom: 20px;
+    }
+
+    .book-details .book-info .description {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .book-details .btn-wrap {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+{% block body %}
+<section class="book-details">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ book.image_url }}" alt="{{ book.title }}" class="book-image">
+            </div>
+            <div class="col-md-6 book-info">
+                <h1>{{ book.title }}</h1>
+                <div class="author">By {{ book.author }}</div>
+                <div class="price">${{ book.price }}</div>
+                <div class="description">
+                    {{ book.description | default('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eu
+                    feugiat amet, libero ipsum enim pharetra hac. Urna commodo, lacus ut magna velit eleifend.') }}
+                </div>
+                <div class="btn-wrap">
+                    <button class="add-to-cart btn btn-outline-accent btn-accent-arrow" data-id="{{ book.book_id }}"
+                        data-title="{{ book.title }}" data-author="{{ book.author }}" data-price="{{ book.price }}"
+                        data-image="{{ book.image_url }}">
+                        Thêm vào giỏ hàng <i class="icon icon-ns-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block script %}
+<script>
+    document.querySelectorAll(".add-to-cart").forEach(button => {
+        button.addEventListener("click", () => {
+            const book = {
+                id: button.dataset.id,
+                title: button.dataset.title,
+                author: button.dataset.author,
+                price: parseFloat(button.dataset.price),
+                image: button.dataset.image,
+                quantity: 1
+            };
+
+            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            const existingItem = cart.find(item => item.id === book.id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push(book);
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert(`Đã thêm "${book.title}" vào giỏ hàng`);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,381 @@
+{% extends "layout.html" %}
+{% block title %} BOOKSTORE {% endblock %}
+{% block style %}
+<style>
+    .product-style {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 400px;
+    }
+    .product-style img.product-item {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        cursor: pointer;
+    }
+    .image-wrapper {
+        width: 500px;
+        height: 500px;
+        background-color: #f0f0f0;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 0px;
+    }
+    .banner-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+</style>
+{% endblock %}
+{% block body %}
+<section id="billboard">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <button class="prev slick-arrow">
+                    <i class="icon icon-arrow-left"></i>
+                </button>
+                <div class="main-slider pattern-overlay">
+                    {% for i in range(3) if books|length > i %}
+                    <div class="slider-item">
+                        <div class="banner-content">
+                            <h2 class="banner-title">{{ books[i]['title'] }}</h2>
+                            <p>{{ books[i]['description'] }}</p>
+                            <div class="btn-wrap">
+                                <a href="/book?book_id={{ books[i]['book_id'] }}"
+                                   class="btn btn-outline-accent btn-accent-arrow">Tìm hiểu<i
+                                        class="icon icon-ns-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="image-wrapper">
+                            <img src="{{ books[i]['image_url'] }}" alt="banner" class="banner-image">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="next slick-arrow">
+                    <i class="icon icon-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="quotation" class="align-center pb-5 mb-5">
+    <div class="inner-content">
+        <h2 class="section-title divider">Trích dẫn hay</h2>
+        <blockquote data-aos="fade-up">
+            <q>“Bạn càng đọc nhiều, bạn sẽ càng biết nhiều điều. Bạn càng học được, bạn càng đến nhiều nơi.”</q>
+            <div class="author-name">Dr. Seuss</div>
+        </blockquote>
+    </div>
+</section>
+
+<section id="client-holder" data-aos="fade-up">
+    <div class="container">
+        <div class="row">
+            <div class="inner-content">
+                <div class="logo-wrap">
+                    <div class="grid">
+                        <a href="#"><img src="{{ url_for('static', filename='images/client-image1.png') }}"
+                                         alt="client"></a>
+                        <a href="#"><img src="{{ url_for('static', filename='images/client-image2.png') }}"
+                                         alt="client"></a>
+                        <a href="#"><img src="{{ url_for('static', filename='images/client-image3.png') }}"
+                                         alt="client"></a>
+                        <a href="#"><img src="{{ url_for('static', filename='images/client-image4.png') }}"
+                                         alt="client"></a>
+                        <a href="#"><img src="{{ url_for('static', filename='images/client-image5.png') }}"
+                                         alt="client"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="best-selling" class="leaf-pattern-overlay">
+    <div class="corner-pattern-overlay"></div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6">
+                        <figure class="products-thumb">
+                            {% if books|length > 1 %}
+                            <img src="{{ books[1]['image_url'] }}" alt="book" class="single-image">
+                            {% endif %}
+                        </figure>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="product-entry">
+                            <h2 class="section-title divider">Bán chạy</h2>
+                            <div class="products-content">
+                                {% if books|length > 1 %}
+                                <div class="author-name">{{ books[1]['author'] }}</div>
+                                <h3 class="item-title">{{ books[1]['title'] }}</h3>
+                                <p>{{ books[1]['description'] }}</p>
+                                <div class="item-price">${{ books[1]['price'] }}</div>
+                                <div class="btn-wrap">
+                                    <a href="/book?book_id={{ books[1]['book_id'] }}"
+                                       class="btn-accent-arrow">Mua ngay<i
+                                            class="icon icon-ns-arrow-right"></i></a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="popular-books" class="bookshelf py-5 my-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-header align-center">
+                    <div class="title">
+                        <span>Những cuốn sách chất lượng</span>
+                    </div>
+                    <h2 class="section-title">Sách đang bán</h2>
+                </div>
+                <ul class="tabs">
+                    <li data-tab-target="#all-genre" class="active tab">Tất cả</li>
+                    <li data-tab-target="#business" class="tab">Kinh doanh</li>
+                    <li data-tab-target="#technology" class="tab">Công nghệ</li>
+                    <li data-tab-target="#romantic" class="tab">Lãng mạn</li>
+                    <li data-tab-target="#adventure" class="tab">Phiêu lưu</li>
+                    <li data-tab-target="#fictional" class="tab">Hư cấu</li>
+                </ul>
+                <div class="tab-content">
+                    <div id="all-genre" data-tab-content class="active">
+                        <div class="row">
+                            {% for book in books %}
+                            <div class="col-md-3">
+                                <div class="product-item">
+                                    <figure class="product-style">
+                                        <img src="{{ book['image_url'] }}" alt="{{ book['title'] }}"
+                                             class="product-item"
+                                             onclick="window.location.href='/book?book_id={{ book['book_id'] }}'">
+                                        <button class="add-to-cart" data-id="{{ book['book_id'] }}"
+                                                data-title="{{ book['title'] }}" data-author="{{ book['author'] }}"
+                                                data-price="{{ book['price'] }}" data-image="{{ book['image_url'] }}">
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    </figure>
+                                    <figcaption>
+                                        <h3>{{ book['title'] }}</h3>
+                                        <span>{{ book['author'] }}</span>
+                                        <div class="item-price">${{ book['price'] }}</div>
+                                    </figcaption>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div id="business" data-tab-content>
+                        <div class="row">
+                            {% for book in businessBooks %}
+                            <div class="col-md-3">
+                                <div class="product-item">
+                                    <figure class="product-style">
+                                        <img src="{{ book['image_url'] }}" alt="{{ book['title'] }}"
+                                             class="product-item"
+                                             onclick="window.location.href='/book?book_id={{ book['book_id'] }}'">
+                                        <button class="add-to-cart" data-id="{{ book['book_id'] }}"
+                                                data-title="{{ book['title'] }}" data-author="{{ book['author'] }}"
+                                                data-price="{{ book['price'] }}" data-image="{{ book['image_url'] }}">
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    </figure>
+                                    <figcaption>
+                                        <h3>{{ book['title'] }}</h3>
+                                        <span>{{ book['author'] }}</span>
+                                        <div class="item-price">${{ book['price'] }}</div>
+                                    </figcaption>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div id="technology" data-tab-content>
+                        <div class="row">
+                            {% for book in technologyBooks %}
+                            <div class="col-md-3">
+                                <div class="product-item">
+                                    <figure class="product-style">
+                                        <img src="{{ book['image_url'] }}" alt="{{ book['title'] }}"
+                                             class="product-item"
+                                             onclick="window.location.href='/book?book_id={{ book['book_id'] }}'">
+                                        <button class="add-to-cart" data-id="{{ book['book_id'] }}"
+                                                data-title="{{ book['title'] }}" data-author="{{ book['author'] }}"
+                                                data-price="{{ book['price'] }}" data-image="{{ book['image_url'] }}">
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    </figure>
+                                    <figcaption>
+                                        <h3>{{ book['title'] }}</h3>
+                                        <span>{{ book['author'] }}</span>
+                                        <div class="item-price">${{ book['price'] }}</div>
+                                    </figcaption>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div id="romantic" data-tab-content>
+                        <div class="row">
+                            {% for book in romanticBooks %}
+                            <div class="col-md-3">
+                                <div class="product-item">
+                                    <figure class="product-style">
+                                        <img src="{{ book['image_url'] }}" alt="{{ book['title'] }}"
+                                             class="product-item"
+                                             onclick="window.location.href='/book?book_id={{ book['book_id'] }}'">
+                                        <button class="add-to-cart" data-id="{{ book['book_id'] }}"
+                                                data-title="{{ book['title'] }}" data-author="{{ book['author'] }}"
+                                                data-price="{{ book['price'] }}" data-image="{{ book['image_url'] }}">
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    </figure>
+                                    <figcaption>
+                                        <h3>{{ book['title'] }}</h3>
+                                        <span>{{ book['author'] }}</span>
+                                        <div class="item-price">${{ book['price'] }}</div>
+                                    </figcaption>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div id="adventure" data-tab-content>
+                        <div class="row">
+                            {% for book in adventureBooks %}
+                            <div class="col-md-3">
+                                <div class="product-item">
+                                    <figure class="product-style">
+                                        <img src="{{ book['image_url'] }}" alt="{{ book['title'] }}"
+                                             class="product-item"
+                                             onclick="window.location.href='/book?book_id={{ book['book_id'] }}'">
+                                        <button class="add-to-cart" data-id="{{ book['book_id'] }}"
+                                                data-title="{{ book['title'] }}" data-author="{{ book['author'] }}"
+                                                data-price="{{ book['price'] }}" data-image="{{ book['image_url'] }}">
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    </figure>
+                                    <figcaption>
+                                        <h3>{{ book['title'] }}</h3>
+                                        <span>{{ book['author'] }}</span>
+                                        <div class="item-price">${{ book['price'] }}</div>
+                                    </figcaption>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div id="fictional" data-tab-content>
+                        <div class="row">
+                            {% for book in fictionalBooks %}
+                            <div class="col-md-3">
+                                <div class="product-item">
+                                    <figure class="product-style">
+                                        <img src="{{ book['image_url'] }}" alt="{{ book['title'] }}"
+                                             class="product-item"
+                                             onclick="window.location.href='/book?book_id={{ book['book_id'] }}'">
+                                        <button class="add-to-cart" data-id="{{ book['book_id'] }}"
+                                                data-title="{{ book['title'] }}" data-author="{{ book['author'] }}"
+                                                data-price="{{ book['price'] }}" data-image="{{ book['image_url'] }}">
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    </figure>
+                                    <figcaption>
+                                        <h3>{{ book['title'] }}</h3>
+                                        <span>{{ book['author'] }}</span>
+                                        <div class="item-price">${{ book['price'] }}</div>
+                                    </figcaption>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Xử lý sự kiện thêm vào giỏ hàng
+        document.querySelectorAll(".add-to-cart").forEach(button => {
+            button.addEventListener("click", () => {
+                const book = {
+                    id: button.dataset.id,
+                    title: button.dataset.title,
+                    author: button.dataset.author,
+                    price: parseFloat(button.dataset.price),
+                    image: button.dataset.image,
+                    quantity: 1
+                };
+
+                let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+                const existingItem = cart.find(item => item.id === book.id);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push(book);
+                }
+
+                localStorage.setItem("cart", JSON.stringify(cart));
+
+                // Cập nhật tổng tiền
+                const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                const shipping = subtotal > 0 ? 5.00 : 0.00;
+                const total = subtotal + shipping;
+
+                localStorage.setItem("summary", JSON.stringify({
+                    subtotal: subtotal.toFixed(2),
+                    shipping: shipping.toFixed(2),
+                    total: total.toFixed(2)
+                }));
+
+                // Cập nhật hiển thị giỏ hàng
+                const cartLink = document.querySelector(".cart.for-buy span");
+                if (cartLink) {
+                    cartLink.textContent = `Giỏ hàng: ($${total.toFixed(2)})`;
+                }
+
+                alert(`Đã thêm "${book.title}" vào giỏ hàng`);
+            });
+        });
+
+        // Xử lý chuyển đổi tab
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('[data-tab-content]');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = document.querySelector(tab.dataset.tabTarget);
+                tabContents.forEach(content => content.classList.remove('active'));
+                tabs.forEach(t => t.classList.remove('active'));
+                target.classList.add('active');
+                tab.classList.add('active');
+            });
+        });
+    });
+</script>
+{% endblock %}

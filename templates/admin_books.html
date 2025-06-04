@@ -1,0 +1,360 @@
+{% extends "layout.html" %}
+{% block title %} Admin - Manage Books {% endblock %}
+{% block style %}
+<style>
+    .admin-books {
+        padding: 3rem 0;
+    }
+    .admin-books .table {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .admin-books .table thead th {
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+    }
+    .admin-books .table tbody td {
+        vertical-align: middle;
+    }
+    .book-form {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    .btn-delete {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+    }
+    .btn-delete:hover {
+        background-color: #b02a37;
+        border-color: #b02a37;
+    }
+    .is-invalid {
+        border: 2px solid red;
+    }
+    .invalid-feedback {
+        color: red;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+
+    .admin-books {
+        padding: 3rem 0;
+
+        min-height: 100vh;
+    }
+    .admin-books .container {
+        max-width: 1400px;
+    }
+    .admin-books h1 {
+        font-size: 2rem;
+        font-weight: 700;
+
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .admin-books .table {
+
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .admin-books .table thead th {
+
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border-bottom: none;
+    }
+    .admin-books .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    .admin-books .table tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+    .admin-books .table tbody td {
+        vertical-align: middle;
+        padding: 1.25rem;
+        font-size: 0.9rem;
+        color: #333;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .admin-books .table tbody td a {
+        color: #007bff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .admin-books .table tbody td a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+    .btn-delete {
+        background-color: #dc3545;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #fff;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+    .btn-delete:hover {
+        background-color: #b21f2d;
+        transform: translateY(-1px);
+    }
+    .btn-delete:active {
+        transform: translateY(0);
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .admin-books .table {
+            display: block;
+            overflow-x: auto;
+        }
+        .admin-books .table thead th,
+        .admin-books .table tbody td {
+            min-width: 120px;
+        }
+        .admin-books h1 {
+            font-size: 1.5rem;
+        }
+    }
+
+</style>
+{% endblock %}
+{% block body %}
+<section class="admin-books">
+    <div class="container">
+        <h1 class="mb-4">Quản lý sách</h1>
+        <div class="row">
+            <!-- Add Book Form -->
+            <div class="col-lg-12 mb-4">
+                <div class="book-form">
+                    <h2 class="mb-3">Thêm sách mới</h2>
+                    <form id="add-book-form">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="title" class="form-label">Tiêu đề</label>
+                                <input type="text" class="form-control" id="title" placeholder="Tiêu đề sách" required>
+                                <div class="invalid-feedback" id="title-error"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="author" class="form-label">Tác giả</label>
+                                <input type="text" class="form-control" id="author" placeholder="Tác giả" required>
+                                <div class="invalid-feedback" id="author-error"></div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="price" class="form-label">Giá</label>
+                                <input type="number" class="form-control" id="price" placeholder="Giá sách" min="0" step="0.01" required>
+                                <div class="invalid-feedback" id="price-error"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Thể loại</label>
+                                <select class="form-control" id="category" required>
+                                    <option value="">Chọn thể loại</option>
+                                    <option value="Business">Kinh doanh</option>
+                                    <option value="Technology">Công nghệ</option>
+                                    <option value="Romantic">Lãng mạn</option>
+                                    <option value="Adventure">Phiêu lưu</option>
+                                    <option value="Fiction">Hư cấu</option>
+                                </select>
+                                <div class="invalid-feedback" id="category-error"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image_url" class="form-label">URL ảnh</label>
+                            <input type="text" class="form-control" id="image_url" placeholder="URL ảnh bìa sách" required>
+                            <div class="invalid-feedback" id="image_url-error"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="description" rows="4" placeholder="Mô tả sách" required></textarea>
+                            <div class="invalid-feedback" id="description-error"></div>
+                        </div>
+                        <button type="submit" class="btn btn-accent">Thêm sách</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Book List -->
+            <!-- <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tiêu đề</th>
+                                <th>Tác giả</th>
+                                <th>Giá</th>
+                                <th>Thể loại</th>
+                                <th>URL ảnh</th>
+                                <th>Hoạt động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in books %}
+                            <tr>
+                                <td>{{ book.book_id }}</td>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.author }}</td>
+                                <td>${{ "%.2f" | format(book.price) }}</td>
+                                <td>{{ book.category }}</td>
+                                <td><a href="{{ book.image_url }}" target="_blank">Xem ảnh</a></td>
+                                <td>
+                                    <button class="btn btn-delete" onclick="deleteBook({{ book.book_id }})">Xóa</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
+
+<div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tiêu đề</th>
+                                <th>Tác giả</th>
+                                <th>Giá</th>
+                                <th>Thể loại</th>
+                                <th>URL ảnh</th>
+                                <th>Hoạt động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in books %}
+                            <tr>
+                                <td>{{ book.book_id }}</td>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.author }}</td>
+                                <td>${{ "%.2f" | format(book.price) }}</td>
+                                <td>{{ book.category }}</td>
+                                <td><a href="{{ book.image_url }}" target="_blank">Xem ảnh</a></td>
+                                <td>
+                                    <button class="btn btn-delete" onclick="deleteBook({{ book.book_id }})">Xóa</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block script %}
+<script>
+    document.getElementById('add-book-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
+
+        const regexPatterns = {
+            'title': /^[a-zA-Z0-9À-ỹ\s.,-]+$/,
+            'author': /^[a-zA-ZÀ-ỹ\s-]+$/,
+            'price': /^[0-9]+(\.[0-9]{1,2})?$/,
+            'image_url': /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif))$/i,
+            'description': /^[a-zA-Z0-9À-ỹ\s.,-]+$/,
+        };
+
+        const errorMessages = {
+            'title': 'Tiêu đề chỉ được chứa chữ cái, số, khoảng trắng, dấu chấm, dấu phẩy và dấu gạch ngang.',
+            'author': 'Tác giả chỉ được chứa chữ cái, khoảng trắng và dấu gạch ngang.',
+            'price': 'Giá phải là số dương, tối đa 2 chữ số thập phân.',
+            'image_url': 'URL ảnh phải là liên kết hợp lệ tới file .png, .jpg, .jpeg hoặc .gif.',
+            'description': 'Mô tả chỉ được chứa chữ cái, số, khoảng trắng, dấu chấm, dấu phẩy và dấu gạch ngang.',
+            'category': 'Vui lòng chọn thể loại.'
+        };
+
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const fieldId = input.id;
+            const errorElement = document.getElementById(`${fieldId}-error`);
+
+            if (value === '') {
+                input.classList.add('is-invalid');
+                errorElement.textContent = 'Trường này không được để trống.';
+                isValid = false;
+            } else if (regexPatterns[fieldId] && !regexPatterns[fieldId].test(value)) {
+                input.classList.add('is-invalid');
+                errorElement.textContent = errorMessages[fieldId];
+                isValid = false;
+            } else {
+                input.classList.remove('is-invalid');
+                errorElement.textContent = '';
+            }
+        });
+
+        if (isValid) {
+            const bookData = {
+                title: document.getElementById('title').value,
+                author: document.getElementById('author').value,
+                price: parseFloat(document.getElementById('price').value),
+                category: document.getElementById('category').value,
+                image_url: document.getElementById('image_url').value,
+                description: document.getElementById('description').value
+            };
+
+            fetch('/admin/add_book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Thêm sách thành công!');
+                    location.reload();
+                } else {
+                    alert('Có lỗi xảy ra khi thêm sách.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi thêm sách.');
+            });
+        }
+    });
+
+    function deleteBook(bookId) {
+        if (confirm('Bạn có chắc muốn xóa cuốn sách này không?')) {
+            fetch('/admin/delete_book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ book_id: bookId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Xóa sách thành công!');
+                    location.reload();
+                } else {
+                    alert('Có lỗi xảy ra khi xóa sách.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi xóa sách.');
+            });
+        }
+    }
+</script>
+{% endblock %}

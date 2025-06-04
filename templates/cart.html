@@ -1,0 +1,191 @@
+{% extends "layout.html" %}
+{% block title %} CART {% endblock %}
+{% block style %}
+<style>
+    .cart-table {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .cart-item img {
+        border-radius: 4px;
+    }
+
+    .cart-item h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .cart-item p {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .quantity-input {
+        width: 80px;
+    }
+
+    .btn-remove {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+        font-size: 0.9rem;
+        padding: 0.25rem 0.75rem;
+    }
+
+    .btn-remove:hover {
+        background-color: #b02a37;
+        border-color: #b02a37;
+    }
+
+    .table thead th {
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Cart Section -->
+<section id="cart" class="padding-medium">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Giỏ hàng</h2>
+        </div>
+        <div class="row">
+            <!-- cart -->
+            <div class="col-lg-8">
+                <div class="cart-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Giá</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Số tiền</th>
+                                <th scope="col">Hoạt động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-items">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--Summary cart-->
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h3 class="section-title">Tổng thanh toán</h3>
+                    <div class="summary-details">
+                        <p><span>Số tiền:</span> $<span id="subtotal">0.00</span></p>
+                        <p><span>Phí ship:</span> $<span id="shipping">5.00</span></p>
+                        <hr>
+                        <p><strong>Tổng:</strong> $<span id="total">45.00</span></p>
+                    </div>
+                    <a href="/checkout" class="btn btn-accent btn-full">Thanh toán</a>
+                    <a href="/" class="btn btn-outline-accent btn-full">Tiếp tục mua sắm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+    function loadCartItems() {
+        const cartItems = document.getElementById("cart-items");
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+
+        function updateTotalPrice() {
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += item.price * item.quantity;
+            });
+
+            const shipping = subtotal > 0 ? 5.00 : 0.00;
+            const total = subtotal + shipping;
+
+            // Cập nhật giao diện
+            document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+            document.getElementById("shipping").textContent = shipping.toFixed(2);
+            document.getElementById("total").textContent = total.toFixed(2);
+
+            // Lưu vào localStorage để dùng cho checkout
+            localStorage.setItem("summary", JSON.stringify({
+                subtotal: subtotal.toFixed(2),
+                shipping: shipping.toFixed(2),
+                total: total.toFixed(2)
+            }));
+        }
+
+
+
+        function createCartRow(item, index) {
+            const row = document.createElement("tr");
+            row.classList.add("cart-item-row");
+            row.dataset.id = item.id;
+            row.dataset.price = item.price;
+
+            row.innerHTML = `
+                <td>
+                    <div class="cart-item d-flex align-items-center">
+                        <img src="${item.image}" alt="Book" class="product-item"
+                             style="width: 80px; height: 120px; object-fit: cover; margin-right: 15px;">
+                        <div>
+                            <h4 class="item-title">${item.title}</h4>
+                            <p>${item.author}</p>
+                        </div>
+                    </div>
+                </td>
+                <td>$${item.price}</td>
+                <td><input type="number" class="form-control quantity-input" value="${item.quantity}" min="1"></td>
+                <td class="subtotal">$${(item.price * item.quantity).toFixed(2)}</td>
+                <td><button class="btn btn-remove">Remove</button></td>
+            `;
+
+            // Sự kiện thay đổi số lượng
+            row.querySelector(".quantity-input").addEventListener("input", e => {
+                const newQuantity = parseInt(e.target.value);
+                cart[index].quantity = newQuantity;
+                localStorage.setItem("cart", JSON.stringify(cart));
+                row.querySelector(".subtotal").textContent = `$${(item.price * newQuantity).toFixed(2)}`;
+                updateTotalPrice();
+            });
+
+            // Sự kiện xóa
+            row.querySelector(".btn-remove").addEventListener("click", () => {
+                const confirmDelete = confirm("Bạn có muốn xóa cuốn sách này không?");
+                if (confirmDelete) {
+                    cart.splice(index, 1);
+                    localStorage.setItem("cart", JSON.stringify(cart));
+                    alert("Bạn đã xóa thành công");
+                    loadCartItems(); // Tải lại để cập nhật
+                }
+            });
+
+            return row;
+        }
+
+        // Làm sạch bảng và thêm lại
+        cartItems.innerHTML = "";
+        cart.forEach((item, index) => {
+            const row = createCartRow(item, index);
+            cartItems.appendChild(row);
+        });
+
+        updateTotalPrice();
+    }
+
+    window.addEventListener("DOMContentLoaded", loadCartItems);
+</script>
+{% endblock %}

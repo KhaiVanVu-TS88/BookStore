@@ -1,0 +1,237 @@
+{% extends "layout.html" %}
+{% block title %} CHECKOUT {% endblock %}
+{% block style %}
+    <style>
+        .checkout-section {
+            padding: 3rem 0;
+        }
+        .checkout-form,
+        .order-summary {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .order-summary .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .order-summary .total {
+            font-weight: bold;
+            border-top: 1px solid #dee2e6;
+            padding-top: 1rem;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+        .form-check {
+            margin-bottom: 0.5rem;
+        }
+        .is-invalid {
+            border: 2px solid red;
+        }
+        .invalid-feedback {
+            color: red;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <section class="checkout-section">
+        <div class="container">
+            <h1 class="mb-4">Thanh toán</h1>
+            <div class="row checkout-content">
+                <div class="col-lg-8 mb-4">
+                    <div class="checkout-form">
+                        <h2 class="mb-3">Vận chuyển</h2>
+                        <div id="form-error" class="error-message"></div>
+                        <form id="checkout-form">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="full-name" class="form-label">Họ tên</label>
+                                    <input type="text" class="form-control" id="full-name" name="full_name" placeholder="Họ tên đầy đủ của bạn" required>
+                                    <div class="invalid-feedback" id="full-name-error"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email của bạn" required>
+                                    <div class="invalid-feedback" id="email-error"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Địa chỉ</label>
+                                <input type="text" class="form-control" id="address" name="address" placeholder="Địa chỉ của bạn" required>
+                                <div class="invalid-feedback" id="address-error"></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="city" class="form-label">Thành phố</label>
+                                    <input type="text" class="form-control" id="city" name="city" placeholder="Thành phố của bạn" required>
+                                    <div class="invalid-feedback" id="city-error"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Số điện thoại</label>
+                                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Số điện thoại liên hệ" required>
+                                    <div class="invalid-feedback" id="phone-error"></div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="cart-data" name="cart">
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="order-summary">
+                        <h2 class="mb-3">Tổng thanh toán</h2>
+                        <div class="summary-item">
+                            <span>Số tiền:</span>
+                            <span>$<span id="subtotal">0.00</span></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Phí ship:</span>
+                            <span>$<span id="shipping">5.00</span></span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>Tổng:</span>
+                            <span>$<span id="total">0.00</span></span>
+                        </div>
+                        <button class="btn btn-accent btn-full" onclick="validateCheckoutForm()">Đặt hàng</button>
+                        <a href="/cart" class="btn btn-outline-accent btn-full">Trở lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-labelledby="orderSuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-header">
+                    <h2 class="modal-title w-100" id="orderSuccessModalLabel">Cảm ơn bạn đã đặt hàng!</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <h3>Đơn hàng của bạn đã được ghi nhận thành công.</h3>
+                    <h3>Chúng tôi sẽ liên hệ để xác nhận và giao hàng sớm tới bạn.</h3>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <a href="/"><button type="button" class="btn btn-accent">Về trang chủ</button></a>
+                    <button type="button" class="btn btn-accent" data-bs-dismiss="modal">Tiếp tục xem</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const summary = JSON.parse(localStorage.getItem("summary") || "{}");
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        document.getElementById("cart-data").value = JSON.stringify(cart);
+
+        if (summary && summary.subtotal && summary.shipping && summary.total) {
+            document.getElementById("subtotal").textContent = summary.subtotal;
+            document.getElementById("shipping").textContent = summary.shipping;
+            document.getElementById("total").textContent = summary.total;
+        } else {
+            document.getElementById("form-error").textContent = "Giỏ hàng trống hoặc dữ liệu không hợp lệ.";
+        }
+    });
+
+    function validateCheckoutForm() {
+        const form = document.getElementById('checkout-form');
+        const inputs = form.querySelectorAll('input[required]');
+        const cart = JSON.parse(document.getElementById("cart-data").value || "[]");
+        const formError = document.getElementById("form-error");
+        let isValid = true;
+
+        // Check if cart is empty
+        if (cart.length === 0) {
+            formError.textContent = "Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm trước khi thanh toán.";
+            isValid = false;
+            return;
+        }
+
+        const regexPatterns = {
+            'full-name': /^[a-zA-ZÀ-ỹ\s-]+$/,
+            'email': /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            'address': /^[a-zA-Z0-9À-ỹ\s,.-]+$/,
+            'city': /^[a-zA-ZÀ-ỹ\s]+$/,
+            'phone': /^(\+84|0)[0-9]{9,10}$/
+        };
+
+        const errorMessages = {
+            'full-name': 'Họ tên chỉ được chứa chữ cái, khoảng trắng và dấu gạch ngang.',
+            'email': 'Vui lòng nhập email hợp lệ (ví dụ: user@example.com).',
+            'address': 'Địa chỉ chỉ được chứa chữ cái, số, khoảng trắng, dấu phẩy, dấu chấm và dấu gạch ngang.',
+            'city': 'Thành phố chỉ được chứa chữ cái và khoảng trắng.',
+            'phone': 'Số điện thoại phải bắt đầu bằng +84 hoặc 0 và có 9-10 chữ số.'
+        };
+
+        inputs.forEach(input => {
+            const value = input.value.trim();
+            const fieldId = input.id;
+            const errorElement = document.getElementById(`${fieldId}-error`);
+
+            if (value === '') {
+                input.classList.add('is-invalid');
+                errorElement.textContent = 'Trường này không được để trống.';
+                isValid = false;
+            } else if (regexPatterns[fieldId] && !regexPatterns[fieldId].test(value)) {
+                input.classList.add('is-invalid');
+                errorElement.textContent = errorMessages[fieldId];
+                isValid = false;
+            } else {
+                input.classList.remove('is-invalid');
+                errorElement.textContent = '';
+            }
+        });
+
+        if (isValid) {
+            const formData = new FormData(document.getElementById('checkout-form'));
+            fetch('/checkout', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const modal = new bootstrap.Modal(document.getElementById("orderSuccessModal"));
+                    modal.show();
+                    localStorage.removeItem("cart");
+                    localStorage.removeItem("summary");
+                } else {
+                    formError.textContent = 'Có lỗi xảy ra khi đặt hàng: ' + (data.error || 'Không xác định');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                formError.textContent = 'Có lỗi xảy ra khi đặt hàng: ' + error.message;
+            });
+        }
+    }
+</script>
+{% endblock %}
